@@ -1,1 +1,1 @@
-# boids-multithreaded
+# Multithreaded Boids Simulation in Go
