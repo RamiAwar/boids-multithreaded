@@ -11,3 +11,9 @@ In the implementation below, a spatial hash grid was used to find the nearest bo
 
 ![1300 Boids, Spatial Lookup, Low Cohesion](1300_boids_spatialhash_low_cohesion.gif)
 
+## Running
+
+```
+go mod download
+go run ./main
+```
