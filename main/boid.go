@@ -51,8 +51,11 @@ func (b *Boid) MoveOne() {
 	separation := Vector2D{0.0, 0.0}
 
 	lock.RLock()
+	// Fetch current cell contents, enough for small view radius
+	nearby := spatialHashGrid.Nearby(b.position, 2)
+
 	count := 0.0
-	for _, boid := range boids {
+	for _, boid := range nearby {
 		if boid.id != b.id {
 			dist := boid.position.Dist(b.position)
 			if dist < view_radius {
@@ -71,28 +74,17 @@ func (b *Boid) MoveOne() {
 		average_position = average_position.DivV(count)
 
 		alignment_acc := average_velocity.Sub(b.velocity).MulV(acceleration_rate)
-		cohesion_acc := average_position.Sub(b.position).MulV(acceleration_rate)
-		separation_acc := separation.MulV(acceleration_rate)
+		cohesion_acc := average_position.Sub(b.position).MulV(cohesion_rate)
+		separation_acc := separation.MulV(separation_rate)
 
 		acc = acc.Add(alignment_acc).Add(cohesion_acc).Add(separation_acc)
 	}
 
 	avoidance := b.Avoid(screen_width, screen_height)
-	// fmt.Println(avoidance)
-
 	b.velocity = b.velocity.Add(acc).Add(avoidance).Clamp(-1, 1)
+
+	spatialHashGrid.Remove(b.position, b.id)
 	b.position = b.position.Add(b.velocity)
-
-	// next := b.position.Add(b.velocity)
-	// if next.x >= screen_width || next.x <= 0 {
-	// 	b.velocity = Vector2D{-b.velocity.x, b.velocity.y}
-	// }
-
-	// if next.y >= screen_height || next.y <= 0 {
-	// 	b.velocity = Vector2D{b.velocity.x, -b.velocity.y}
-	// }
-
-	// spatialHashGrid.Remove(b.position, b.id)
-	// spatialHashGrid.Add(*b)
+	spatialHashGrid.Add(*b)
 	lock.Unlock()
 }

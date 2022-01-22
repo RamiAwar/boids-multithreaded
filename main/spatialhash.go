@@ -1,6 +1,9 @@
 package main
 
-import "math"
+import (
+	"fmt"
+	"math"
+)
 
 type SpatialHash struct {
 	CellSize float64
@@ -35,8 +38,10 @@ func (h *SpatialHash) Remove(point Vector2D, id int) {
 			n := len(h.Cells[key])
 			h.Cells[key][i] = h.Cells[key][n-1]
 			h.Cells[key] = h.Cells[key][:n-1]
+			return
 		}
 	}
+	fmt.Println("Failed to remove")
 }
 
 func (h *SpatialHash) Nearby(point Vector2D, radius int) []Boid {

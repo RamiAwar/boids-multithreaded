@@ -11,10 +11,16 @@ import (
 )
 
 const screen_width, screen_height = 640, 360
-const boid_count = 1000
+const boid_count = 1300
 const view_radius = 13
 const boid_size = 4
-const acceleration_rate = 0.02
+const acceleration_rate = 0.03
+const cohesion_rate = 0.015
+const separation_rate = 0.03
+
+const cell_size = 40
+
+var spatialHashGrid = NewSpatialHash(cell_size)
 
 var emptyImage = ebiten.NewImage(3, 3)
 var emptySubImage = emptyImage.SubImage(image.Rect(1, 1, 2, 2)).(*ebiten.Image)
@@ -79,7 +85,7 @@ func main() {
 	for i := 0; i < boid_count; i++ {
 		boid := CreateBoid(i)
 		boids[i] = &boid
-
+		spatialHashGrid.Add(boid)
 		go boid.Start()
 	}
 	lock.Unlock()
